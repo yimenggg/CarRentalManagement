@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace CarRentalManagement.Server.Controllers
 {
-    [Authorize]
+    //[Authorize] unauthorise so i can send http request
     [ApiController]
     [Route("[controller]")]
     public class WeatherForecastController : ControllerBase
