@@ -8,7 +8,7 @@ namespace CarRentalManagement.Shared.Domain
 {
     public abstract class BaseDomainModel
     {
-        public int  id { get; set; }
+        public int id { get; set; }
 
         public DateTime DateCreated { get; set; }
 

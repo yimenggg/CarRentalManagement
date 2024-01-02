@@ -1,0 +1,64 @@
+﻿@page "/bookings/"
+@inject HttpClient _client
+@inject IJSRuntime _js
+@attribute [Authorize]
+
+
+<h3 class="card-title">Car Bookings</h3>
+
+@if (Bookings == null)
+{
+	<div class="alert alert-info">Loading Bookings...</div>
+}
+else
+{
+	<table class="table table-responsive">
+		<thead>
+			<tr>
+				<th>Booking Id</th>
+				<th>Customer License</th>
+				<th>Date</th>
+				<th>Duration in days</th>
+				<th>Plate Number</th>
+				<th>Actions</th>
+			</tr>
+		</thead>
+
+		<tbody>
+			@foreach (var booking in Bookings)
+			{
+				<tr>
+					<td>@booking.id</td>
+					<td>@booking.Customer.DrivingLicence</td>
+					<td>@booking.DateCreated.Date.ToString("dd MMMM yyyy")</td>
+					<td>@((booking.DateIn - booking.DateOut).TotalDays.ToString())</td>
+					<td>@booking.Vehicle.LicencePlateNumber</td>
+				</tr>
+			}
+		</tbody>
+	</table>
+}
+@code
+{
+
+	private List<Booking>? Bookings;
+
+	protected override async Task OnInitializedAsync()
+	{
+		Bookings = await _client.GetFromJsonAsync<List<Booking>>($"{Endpoints.BookingsEndpoint}");
+	}
+
+	async Task Delete(int bookingId)
+	{
+		if (Bookings != null)
+		{
+			var booking = Bookings.First(q => q.id == bookingId);
+			var confirm = await _js.InvokeAsync<bool>("confirm", $"Do you want to delete {booking.id}?");
+			if (confirm)
+			{
+				await _client.DeleteAsync($"{Endpoints.BookingsEndpoint}/{bookingId}");
+				await OnInitializedAsync();
+			}
+		}
+	}
+}
